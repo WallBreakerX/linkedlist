@@ -1,4 +1,7 @@
-# 内存管理链表linkedlist
-linkedlist
+# 内存管理链表  linkedlist
 
-此链表提供了一个key:value形式的动态内存管理
+此链表提供了一个动态内存管理方案。
+
+数据在节点中的储存方式为 key : value 形式。
+
+- 线程安全，可重入。
