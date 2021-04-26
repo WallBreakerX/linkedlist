@@ -7,7 +7,7 @@
 int main(void){
     while(1){
         ////////// init //////////
-        ROOT* root = linkedlist_init();
+        ROOT* root = linkedlist_create();
 
         char* data[8];
         char* value[8];
@@ -41,7 +41,7 @@ int main(void){
         linkedlist_traverse(root);
 
         ////////// empty //////////
-        linkedlist_empty(&root);
+        linkedlist_destroy(&root);
         usleep(100);
         break;
     }

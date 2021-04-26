@@ -1,10 +1,28 @@
+/*
+******************************************************************************
+* Copyright (c) 2021—2021 Tinhow Zeng. All rights reserved.
+******************************************************************************
+* email           : a84987336@outlook.com
+* Author          : Tinhow Zeng
+* File Name       : linkedlist.c
+* Version         : V1.00.00_20210426
+* date            : 2021.4.26
+* Description     : Dynamic memory management solution
+
+* History         :
+    <author>        <version>           <time>      <desc>
+    Tinhow Zeng     V1.00.00_20210426   2021.4.26   create
+******************************************************************************
+* Copyright (c) 2021—2021 Tinhow Zeng. All rights reserved.
+******************************************************************************
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "linkedlist.h"
 
 
-ROOT* linkedlist_init(void){
+ROOT* linkedlist_create(void){
     ROOT* root = (ROOT*)malloc(sizeof(ROOT));
     root->listlen = 0;
     root->lock = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
@@ -133,7 +151,7 @@ int linkedlist_traverse(ROOT* root){
 
 }
 
-int linkedlist_empty(ROOT** root){
+int linkedlist_destroy(ROOT** root){
     // lock
     pthread_mutex_lock((*root)->lock);
     if ((*root) == NULL){
