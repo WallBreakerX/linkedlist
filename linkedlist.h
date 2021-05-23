@@ -20,21 +20,6 @@
 #ifndef _LINKEDLIST_H_
 #define _LINKEDLIST_H_
 
-#include <pthread.h>
-
-typedef struct linkedlist_node
-{
-    char* key;
-    void* value;
-    struct linkedlist_node* next;
-}NODE;
-
-typedef struct linkedlist_root
-{
-    int listlen;
-    pthread_mutex_t *lock;
-    struct linkedlist_node* node_root;
-}ROOT;
 
 //#define DEBUG
 
@@ -51,7 +36,7 @@ typedef struct linkedlist_root
     
     返回：  链表根节点指针
 */
-ROOT* linkedlist_create(void);
+void* linkedlist_create(void);
 
 /*
     功能：  添加新节点到链表
@@ -65,7 +50,7 @@ ROOT* linkedlist_create(void);
     返回：  LIST_OK     成功
             其他        见上方宏定义
 */
-int linkedlist_add(ROOT* root, char* key_in, void* value_in);
+int linkedlist_add(void* root, char* key_in, void* value_in);
 
 /*
     功能：  获取指定key的value指针地址
@@ -79,7 +64,7 @@ int linkedlist_add(ROOT* root, char* key_in, void* value_in);
     返回：  LIST_OK     成功
             其他        见上方宏定义
 */
-int linkedlist_get(ROOT* root, char* key_in, void** value_out);
+int linkedlist_get(void* root, char* key_in, void** value_out);
 
 /*
     功能：  删除指定key节点
@@ -90,7 +75,7 @@ int linkedlist_get(ROOT* root, char* key_in, void** value_out);
     返回：  LIST_OK     成功
             其他        见上方宏定义
 */
-int linkedlist_del(ROOT* root, char* key_in);
+int linkedlist_del(void* root, char* key_in);
 
 /*
     功能：  遍历链表，顺序打印出每个节点的地址与key
@@ -100,7 +85,7 @@ int linkedlist_del(ROOT* root, char* key_in);
     返回：  LIST_OK     成功
             其他        见上方宏定义
 */
-int linkedlist_traverse(ROOT* root);
+int linkedlist_traverse(void* root);
 
 /*
     功能：  摧毁链表
@@ -110,6 +95,6 @@ int linkedlist_traverse(ROOT* root);
     返回：  LIST_OK     成功
             其他        见上方宏定义
 */
-int linkedlist_destroy(ROOT** root);
+int linkedlist_destroy(void** root);
 
 #endif

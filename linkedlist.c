@@ -19,18 +19,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 #include "linkedlist.h"
 
+typedef struct linkedlist_node
+{
+    char* key;
+    void* value;
+    struct linkedlist_node* next;
+}NODE;
 
-ROOT* linkedlist_create(void){
-    ROOT* root = (ROOT*)malloc(sizeof(ROOT));
-    root->listlen = 0;
-    root->lock = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
-    pthread_mutex_init(root->lock, NULL);
-    root->node_root = NULL;
-    
-    return root;
-}
+typedef struct linkedlist_root
+{
+    int listlen;
+    pthread_mutex_t *lock;
+    struct linkedlist_node* node_root;
+}ROOT;
 
 NODE* create_node(char* key, void* value){
     NODE* node = (NODE*)malloc(sizeof(NODE));
@@ -64,48 +68,58 @@ void free_root(ROOT* root){
     free(root);
 }
 
-int linkedlist_add(ROOT* root, char* key_in, void* value_in){
+void* linkedlist_create(void){
+    ROOT* Root = (ROOT*)malloc(sizeof(ROOT));
+    Root->listlen = 0;
+    Root->lock = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init(Root->lock, NULL);
+    Root->node_root = NULL;
+    
+    return (void*)Root;
+}
+
+int linkedlist_add(void* root, char* key_in, void* value_in){
     // lock
-    pthread_mutex_lock(root->lock);
     if (root == NULL){
-        pthread_mutex_unlock(root->lock);
         return LIST_ROOT_IS_NULL;
     }
-    if ((root->listlen == 0) && (root->node_root == NULL)){ // 如果list为空，直接添加到node_root，然后退出
+    ROOT* Root = root;
+    pthread_mutex_lock(Root->lock);
+    if ((Root->listlen == 0) && (Root->node_root == NULL)){ // 如果list为空，直接添加到node_root，然后退出
         NODE* new_node = create_node(key_in, value_in);
-        root->node_root = new_node;
-        root->listlen += 1;
+        Root->node_root = new_node;
+        Root->listlen += 1;
 
-        pthread_mutex_unlock(root->lock);
+        pthread_mutex_unlock(Root->lock);
         return LIST_OK;
     }
-    NODE* node = root->node_root;
+    NODE* node = Root->node_root;
     NODE* lastnode = node;
     while(1){
         if (node == NULL){
             break;
         }
         if (strcmp(node->key, key_in) == 0){ // 存在相同的key，退出
-            pthread_mutex_unlock(root->lock);
+            pthread_mutex_unlock(Root->lock);
             return LIST_KEY_EXIST;
         }
         lastnode = node;    // 保存当前node
         node = node->next;  // 当前node后移
     }
     lastnode->next = create_node(key_in, value_in);
-    root->listlen += 1;
+    Root->listlen += 1;
 
-    pthread_mutex_unlock(root->lock);
+    pthread_mutex_unlock(Root->lock);
     return LIST_OK;
 }
 
-int linkedlist_get(ROOT* root, char* key_in, void** value_out){
-    pthread_mutex_lock(root->lock);
+int linkedlist_get(void* root, char* key_in, void** value_out){
     if (root == NULL){
-        pthread_mutex_unlock(root->lock);
         return LIST_ROOT_IS_NULL;
     }
-    NODE* node = root->node_root;
+    ROOT* Root = root;
+    pthread_mutex_lock(Root->lock);
+    NODE* node = Root->node_root;
     while(1){
         if (node == NULL){
             break;
@@ -116,26 +130,25 @@ int linkedlist_get(ROOT* root, char* key_in, void** value_out){
             #endif
             if (strcmp(node->key, key_in) == 0){
                 (*value_out) = node->value;
-                pthread_mutex_unlock(root->lock);
+                pthread_mutex_unlock(Root->lock);
                 return LIST_OK;
             }
             node = node->next;
         }
     }
 
-    pthread_mutex_unlock(root->lock);
+    pthread_mutex_unlock(Root->lock);
     return LIST_KEY_NOTEXIST;
 }
 
-int linkedlist_traverse(ROOT* root){
+int linkedlist_traverse(void* root){
     // lock
-    pthread_mutex_lock(root->lock);
-    printf(">>>>>> traverse <<<<<<\n");
     if (root == NULL){
-        pthread_mutex_unlock(root->lock);
         return LIST_ROOT_IS_NULL;
     }
-    NODE* node = root->node_root;
+    ROOT* Root = root;
+    pthread_mutex_lock(Root->lock);
+    NODE* node = Root->node_root;
     while(1){
         if (node == NULL){
             break;
@@ -145,21 +158,22 @@ int linkedlist_traverse(ROOT* root){
             node = node->next;
         }
     }
-    pthread_mutex_unlock(root->lock);
+    pthread_mutex_unlock(Root->lock);
     printf(">>>>>> traverse over <<<<<<\n");
     return LIST_OK;
 
 }
 
-int linkedlist_destroy(ROOT** root){
+int linkedlist_destroy(void** root){
     // lock
-    pthread_mutex_lock((*root)->lock);
-    if ((*root) == NULL){
-        pthread_mutex_unlock((*root)->lock);
+    if (root == NULL){
+        // unlock
         return LIST_ROOT_IS_NULL;
     }
-    NODE* node = (*root)->node_root;
-    
+
+    ROOT** Root = (ROOT**)root;
+    pthread_mutex_lock((*Root)->lock);
+    NODE* node = (*Root)->node_root;
     
     while(1){
         if (node == NULL){
@@ -171,9 +185,9 @@ int linkedlist_destroy(ROOT** root){
             node = next;
         }
     }
-    pthread_mutex_t *list_lock = (*root)->lock;
-    free_root((*root));
-    (*root) = NULL;
+    pthread_mutex_t *list_lock = (*Root)->lock;
+    free_root((*Root));
+    (*Root) = NULL;
     pthread_mutex_unlock(list_lock);
     pthread_mutex_destroy(list_lock);
     free(list_lock);
@@ -181,16 +195,17 @@ int linkedlist_destroy(ROOT** root){
     return LIST_OK;
 }
 
-int linkedlist_del(ROOT* root, char* key_in){
+int linkedlist_del(void* root, char* key_in){
     // lock
-    pthread_mutex_lock(root->lock);
     if (root == NULL){
         // unlock
-        pthread_mutex_unlock(root->lock);
         return LIST_ROOT_IS_NULL;
     }
+    ROOT* Root = root;
+    pthread_mutex_lock(Root->lock);
 
-    NODE* node = root->node_root;
+    
+    NODE* node = Root->node_root;
     NODE* lastnode = NULL;
     while(1){
         if (node == NULL){
@@ -201,17 +216,17 @@ int linkedlist_del(ROOT* root, char* key_in){
                 #ifdef DEBUG
                 printf("\n>>> DEL node: %d, key: %s\n\n", node, node->key);
                 #endif
-                if (node == root->node_root){ // 当删除的Node为第一个Node时
-                    root->node_root = node->next;
-                    root->listlen -= 1;
+                if (node == Root->node_root){ // 当删除的Node为第一个Node时
+                    Root->node_root = node->next;
+                    Root->listlen -= 1;
                     free_node(node);
                 }
                 else{ // 当删除的Node在第一个Node之后
                     lastnode->next = node->next;
-                    root->listlen -= 1;
+                    Root->listlen -= 1;
                     free_node(node);
                 }
-                pthread_mutex_unlock(root->lock);
+                pthread_mutex_unlock(Root->lock);
                 return LIST_OK;
             }
             lastnode = node;
@@ -219,6 +234,6 @@ int linkedlist_del(ROOT* root, char* key_in){
         }
     }
 
-    pthread_mutex_unlock(root->lock);
+    pthread_mutex_unlock(Root->lock);
     return LIST_KEY_NOTEXIST;
 }

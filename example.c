@@ -7,7 +7,7 @@
 int main(void){
     while(1){
         ////////// init //////////
-        ROOT* root = linkedlist_create();
+        void* root = linkedlist_create();
 
         char* data[8];
         char* value[8];
