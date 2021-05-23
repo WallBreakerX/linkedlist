@@ -10,8 +10,9 @@
 * Description     : Dynamic memory management solution
 
 * History         :
-    <author>        <version>           <time>      <desc>
-    Tinhow Zeng     V1.00.00_20210426   2021.4.26   create
+        <author>        <version>           <time>      <desc>
+        Tinhow Zeng     V1.00.00_20210426   2021.4.26   create
+        Tinhow Zeng     V1.00.00_20210523   2021.5.23   optimization
 ******************************************************************************
 * Copyright (c) 2021—2021 Tinhow Zeng. All rights reserved.
 ******************************************************************************
@@ -23,77 +24,90 @@
 
 //#define DEBUG
 
-#define LIST_OK               0 // 成功
-#define LIST_ROOT_IS_NULL    -1 // 根为空
-#define LIST_KEY_EXIST       -2 // 键已经存在
-#define LIST_KEY_NOTEXIST    -3 // 键不存在
+#define LIST_OK               0 // 成功 OK
+#define LIST_ROOT_IS_NULL    -1 // 根为空 root is null
+#define LIST_KEY_EXIST       -2 // 键已经存在 key already exist
+#define LIST_KEY_NOTEXIST    -3 // 键不存在   key doesn't exist
 
 
 /*
-    功能：  创建链表根节点
+        功能feature：  
+                创建链表根节点 Ceate linkedlist root
     
-    输入：  空
+        输入input：  
+                空void
     
-    返回：  链表根节点指针
+        返回return：  
+                链表根节点指针 address of linkedlist root
 */
 void* linkedlist_create(void);
 
 /*
-    功能：  添加新节点到链表
-            从链表尾部添加
+        功能feature：  
+                添加新节点到链表尾 add new node to linkedlist's tail
+        输入input：  
+                ROOT* root      链表根节点      address of linkedlist root
+                char* key_in    键指针          address of key
+                void* value_in  数据指针        address of value
 
-    输入：  ROOT* root      链表根节点
-            char* key_in    键指针
-            void* value_in  数据指针
-            以上输入需要由使用者自行申请空间后再传入。
-
-    返回：  LIST_OK     成功
-            其他        见上方宏定义
+        返回return:   
+                LIST_OK         成功 OK
+                其他other       见上方宏定义 see definiton
 */
 int linkedlist_add(void* root, char* key_in, void* value_in);
 
 /*
-    功能：  获取指定key的value指针地址
+        功能feature：  
+                获取指定key的value指针地址 get specified value of key's address
 
-    输入：  ROOT* root      链表根节点
-            char* key_in        键指针
-            void** value_out    空value指针的地址 
+        输入input：  
+                void* root      链表根节点 address of linkedlist root
+                char* key_in    键指针     address of specified key
 
-    输出:   void** value_out    符合要求的key的value指针的地址 
+        输出output:   
+                void** value_out    符合要求的key的value指针的地址 address of value
 
-    返回：  LIST_OK     成功
-            其他        见上方宏定义
+        返回return：  
+                LIST_OK     成功
+                其他        见上方宏定义
 */
 int linkedlist_get(void* root, char* key_in, void** value_out);
 
 /*
-    功能：  删除指定key节点
+        功能feature：  删除指定key节点 delete specified key
 
-    输入：  ROOT* root      链表根节点
-            char* key_in        键指针
+        输入input：  
+                void* root      链表根节点 address of linkedlist root
+                char* key_in    键指针     address of specified key
 
-    返回：  LIST_OK     成功
-            其他        见上方宏定义
+        返回return：  
+                LIST_OK     成功
+                其他        见上方宏定义
 */
 int linkedlist_del(void* root, char* key_in);
 
 /*
-    功能：  遍历链表，顺序打印出每个节点的地址与key
+        功能feature：  遍历链表，顺序打印出每个节点的地址与key traverse whole linkedlist(only read form node)
 
-    输入：  ROOT* root      链表根节点
+        输入input：  
+                void* root      链表根节点 address of linkedlist root
 
-    返回：  LIST_OK     成功
-            其他        见上方宏定义
+        返回return：  
+                LIST_OK     成功 OK
+                其他        见上方宏定义
 */
 int linkedlist_traverse(void* root);
 
 /*
-    功能：  摧毁链表
+        功能feature:
+                摧毁链表 destroy whole linkedlist
 
-    输入：  ROOT* root  链表根节点地址
+        输入input:
+                ROOT* root  链表根节点地址 address of linkedlist root
 
-    返回：  LIST_OK     成功
-            其他        见上方宏定义
+        返回：  
+                LIST_OK     成功 OK
+                其他        见上方宏定义
 */
 int linkedlist_destroy(void** root);
 

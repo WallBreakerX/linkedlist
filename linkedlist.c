@@ -10,8 +10,9 @@
 * Description     : Dynamic memory management solution
 
 * History         :
-    <author>        <version>           <time>      <desc>
-    Tinhow Zeng     V1.00.00_20210426   2021.4.26   create
+        <author>        <version>           <time>      <desc>
+        Tinhow Zeng     V1.00.00_20210426   2021.4.26   create
+        Tinhow Zeng     V1.00.00_20210523   2021.5.23   optimization
 ******************************************************************************
 * Copyright (c) 2021—2021 Tinhow Zeng. All rights reserved.
 ******************************************************************************
