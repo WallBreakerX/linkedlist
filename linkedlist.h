@@ -103,9 +103,9 @@ int linkedlist_traverse(void* root);
                 摧毁链表 destroy whole linkedlist
 
         输入input:
-                ROOT* root  链表根节点地址 address of linkedlist root
+                ROOT* root  链表根节点地址 address's address of linkedlist root
 
-        返回：  
+        返回return：  
                 LIST_OK     成功 OK
                 其他        见上方宏定义
 */
